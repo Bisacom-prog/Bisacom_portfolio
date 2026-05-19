@@ -24,3 +24,141 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family: system-ui;
+  background:#0f172a;
+  color:white;
+}
+
+.container{max-width:1200px;margin:auto;padding:20px}
+
+.nav{
+  position:fixed;
+  width:100%;
+  backdrop-filter:blur(10px);
+  background:rgba(0,0,0,0.4);
+}
+
+.nav-inner{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.hero{
+  padding-top:120px;
+  min-height:90vh;
+  display:flex;
+  align-items:center;
+}
+
+.hero-title{
+  font-size:48px;
+  animation:fadeUp .8s ease;
+}
+
+.hero-sub{
+  margin-top:10px;
+  color:#94a3b8;
+}
+
+.btn{
+  padding:14px 22px;
+  border-radius:10px;
+  text-decoration:none;
+  display:inline-block;
+}
+
+.primary{
+  background:linear-gradient(135deg,#2563eb,#22d3ee);
+}
+
+.secondary{
+  border:1px solid #555;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;
+}
+
+.case{
+  background:#1e293b;
+  padding:20px;
+  border-radius:12px;
+  transition:.3s;
+}
+
+.case:hover{
+  transform:translateY(-6px) scale(1.02);
+}
+
+.footer{
+  padding:40px;
+  text-align:center;
+  color:#94a3b8;
+}
+
+.cookie{
+  position:fixed;
+  bottom:20px;
+  left:20px;
+  background:#111;
+  padding:20px;
+  border-radius:10px;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.group:hover .group-hover\:scale-105 {
+  transform: scale(1.05);
+}
+
+/* PROGRESS BAR */
+#progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: #3B82F6;
+  width: 0%;
+  z-index: 9999;
+}
+
+/* ENHANCED CARD */
+.card-hover {
+  transition: all 0.35s ease;
+}
+.card-hover:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+}
+
+/* IMAGE DEPTH */
+.project-img {
+  transition: transform 0.5s ease;
+}
+.group:hover .project-img {
+  transform: scale(1.06);
+}
+
+.card-hover:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+}
