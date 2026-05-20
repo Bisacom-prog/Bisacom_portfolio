@@ -115,7 +115,7 @@ export default function Page() {
     const closeCookies = document.getElementById("closeCookies");
     const manageCookies = document.getElementById("manageCookies");
     const storageKey = "bisacomCookiePreferences";
-    let closeTimeout: ReturnType<typeof window.setTimeout> | undefined;
+    let closeTimeout:number | undefined;
 
     function getPreferences() {
       try {
@@ -170,7 +170,7 @@ export default function Page() {
     }
 
     const savedPreferences = getPreferences();
-    let openTimeout: ReturnType<typeof window.setTimeout> | undefined;
+    let openTimeout: number | undefined;
     if (!savedPreferences) {
       openTimeout = window.setTimeout(openCookieModal, 600);
     } else {
@@ -224,134 +224,6 @@ export default function Page() {
 
   return (
     <>
-      <style>{`
-html { scroll-behavior: smooth; }
-body { text-rendering: optimizeLegibility; }
-
-#progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0%;
-  height: 3px;
-  z-index: 60;
-  background: linear-gradient(90deg, #1E3A8A, #22C55E);
-}
-
-.fade-up {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-.fade-up.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.card-hover {
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-}
-.card-hover:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
-}
-
-.project-img {
-  transition: transform 0.5s ease;
-}
-.group:hover .project-img {
-  transform: scale(1.05);
-}
-
-.focus-ring:focus-visible {
-  outline: 3px solid rgba(59, 130, 246, 0.45);
-  outline-offset: 3px;
-}
-
-.nav-link {
-  position: relative;
-  transition: color 0.25s ease;
-}
-.nav-link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -8px;
-  width: 100%;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #2D5BDE, #22C55E);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.25s ease;
-}
-.nav-link:hover::after,
-.nav-link:focus-visible::after {
-  transform: scaleX(1);
-}
-
-.btn-lift {
-  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
-}
-.btn-lift:hover {
-  transform: translateY(-2px);
-}
-
-.mobile-menu-panel {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transform: translateY(-8px);
-  transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.25s ease;
-}
-.mobile-menu-panel.is-open {
-  max-height: 520px;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.hamburger-line {
-  display: block;
-  height: 2px;
-  width: 20px;
-  border-radius: 999px;
-  background: currentColor;
-  transition: transform 0.25s ease, opacity 0.2s ease;
-}
-.menu-open .hamburger-line:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
-}
-.menu-open .hamburger-line:nth-child(2) {
-  opacity: 0;
-}
-.menu-open .hamburger-line:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
-}
-
-.social-icon svg {
-  transition: transform 0.25s ease;
-}
-.social-icon:hover svg {
-  transform: scale(1.08);
-}
-
-.cookie-modal {
-  transform: translateY(12px) scale(0.98);
-  opacity: 0;
-  transition: transform 0.25s ease, opacity 0.25s ease;
-}
-.cookie-modal.is-open {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .fade-up, .card-hover, .project-img, .btn-lift, .mobile-menu-panel, .hamburger-line, .cookie-modal { transition: none; }
-  .fade-up { opacity: 1; transform: none; }
-}
-      `}</style>
-
       <div id="progress" aria-hidden="true"></div>
 
       {/* NAV */}
@@ -713,7 +585,7 @@ body { text-rendering: optimizeLegibility; }
                     local mechanics.
                   </p>
                   <a
-                    href="mechanic.html"
+                    href="/projects/mobile-mechanic-app"
                     className="focus-ring mt-5 inline-flex rounded-md text-sm font-semibold text-blue-600 hover:text-blue-700"
                   >
                     View case study &rarr;
@@ -739,7 +611,7 @@ body { text-rendering: optimizeLegibility; }
                     generate enquiries.
                   </p>
                   <a
-                    href="cleaning.html"
+                    href="/projects/cleaning-website"
                     className="focus-ring mt-5 inline-flex rounded-md text-sm font-semibold text-blue-600 hover:text-blue-700"
                   >
                     View case study &rarr;
@@ -765,7 +637,7 @@ body { text-rendering: optimizeLegibility; }
                     built to increase online sales.
                   </p>
                   <a
-                    href="majoa.html"
+                    href="/projects/majoas-kitchen"
                     className="focus-ring mt-5 inline-flex rounded-md text-sm font-semibold text-blue-600 hover:text-blue-700"
                   >
                     View case study &rarr;
@@ -1006,7 +878,7 @@ body { text-rendering: optimizeLegibility; }
                   Project details
                   <textarea
                     name="message"
-                    rows="5"
+                    rows={5}
                     required
                     className="focus-ring w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 dark:border-white/10 dark:bg-[#111827] dark:text-white"
                   ></textarea>
@@ -1125,13 +997,13 @@ body { text-rendering: optimizeLegibility; }
                   aria-label="Legal links"
                 >
                   <a
-                    href="privacy-policy.html"
+                    href="/privacy-policy"
                     className="transition hover:text-white"
                   >
                     Privacy Policy
                   </a>
                   <a
-                    href="terms-of-use.html"
+                    href="/terms-of-use"
                     className="transition hover:text-white"
                   >
                     Terms of Use
