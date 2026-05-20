@@ -235,7 +235,7 @@ export default function Page() {
             aria-label="Bisacom home"
           >
             <img
-              src="/assets/img/Bisacom.webp"
+              src="/img/Bisacom.webp"
               className="h-9 w-9 rounded-lg object-cover"
               alt="Bisacom logo"
             />
@@ -419,7 +419,7 @@ export default function Page() {
                   aria-hidden="true"
                 ></div>
                 <img
-                  src="/assets/img/mockup.webp"
+                  src="/img//mockup.webp"
                   className="relative w-full rounded-2xl border border-white/70 shadow-2xl dark:border-white/10"
                   alt="Product interface mockup designed by Bisacom"
                 />
@@ -570,7 +570,7 @@ export default function Page() {
               <article className="group card-hover overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#111827]">
                 <div className="relative overflow-hidden">
                   <img
-                    src="/assets/img/mobile.webp"
+                    src="/img//mobile.webp"
                     className="project-img h-60 w-full object-cover"
                     alt="Mobile mechanic app screens"
                   />
@@ -596,7 +596,7 @@ export default function Page() {
               <article className="group card-hover overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#111827]">
                 <div className="relative overflow-hidden">
                   <img
-                    src="/assets/img/cleaning.webp"
+                    src="/img//cleaning.webp"
                     className="project-img h-60 w-full object-cover"
                     alt="Cleaning service website design"
                   />
@@ -622,7 +622,7 @@ export default function Page() {
               <article className="group card-hover overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#111827]">
                 <div className="relative overflow-hidden">
                   <img
-                    src="/assets/img/abas.webp"
+                    src="/img//abas.webp"
                     className="project-img h-60 w-full object-cover"
                     alt="Majoa's Kitchen ecommerce interface"
                   />
@@ -739,7 +739,7 @@ export default function Page() {
                 </blockquote>
                 <figcaption className="mt-6 flex items-center gap-3">
                   <img
-                    src="/assets/img/Client1.webp"
+                    src="/img//Client1.webp"
                     className="h-11 w-11 rounded-full object-cover"
                     alt="Michael A."
                   />
@@ -765,7 +765,7 @@ export default function Page() {
                 </blockquote>
                 <figcaption className="mt-6 flex items-center gap-3">
                   <img
-                    src="/assets/img/Client3.webp"
+                    src="/img//Client3.webp"
                     className="h-11 w-11 rounded-full object-cover"
                     alt="Daniel K."
                   />
@@ -789,7 +789,7 @@ export default function Page() {
                 </blockquote>
                 <figcaption className="mt-6 flex items-center gap-3">
                   <img
-                    src="/assets/img/Client2.webp"
+                    src="/img//Client2.webp"
                     className="h-11 w-11 rounded-full object-cover"
                     alt="Majoa K."
                   />
@@ -933,7 +933,7 @@ export default function Page() {
                   aria-label="Bisacom home"
                 >
                   <img
-                    src="/assets/img/Bisacom.webp"
+                    src="/img//Bisacom.webp"
                     className="h-11 w-11 rounded-xl object-cover ring-1 ring-white/10"
                     alt="Bisacom logo"
                   />
