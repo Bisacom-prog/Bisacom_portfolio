@@ -1,84 +1,86 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+
+const projects = [
+  {
+    title: "Mobile Mechanic App",
+    type: "Mobile App",
+    description: "On-demand car repair app connecting drivers with trusted mobile mechanics.",
+    image: "/img/mobile.webp",
+    href: "/projects/mobile-mechanic-app",
+  },
+  {
+    title: "Cleaning Website",
+    type: "Website Design",
+    description: "Modern, conversion-focused website for a cleaning service business in the UK.",
+    image: "/img/cleaning.webp",
+    href: "/projects/cleaning-website",
+  },
+  {
+    title: "Aba’s Pie",
+    type: "Website Design",
+    description: "E-commerce website design for a local bakery specialising in homemade pies.",
+    image: "/img/abas.webp",
+    href: "/projects/abas-pie",
+  },
+];
+
+const reviews = [
+  {
+    quote: "Bisacom brought clarity to our website structure and made the user journey feel simple, modern, and professional.",
+    name: "Majoa K.",
+    role: "Food Business Owner",
+    image: "/img/Client2.webp",
+  },
+  {
+    quote: "The product thinking behind the mobile mechanic concept was strong. The flow felt practical and easy to understand.",
+    name: "Daniel K.",
+    role: "Startup Founder",
+    image: "/img/Client3.webp",
+  },
+  {
+    quote: "Professional, responsive, and detail-oriented. The final design helped us look more credible online.",
+    name: "Michael A.",
+    role: "Service Business Owner",
+    image: "/img/Client1.webp",
+  },
+];
+
+function IconBox({ children }: { children: ReactNode }) {
+  return (
+    <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-blue-500/10 bg-blue-50 text-blue-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-blue-300">
+      {children}
+    </span>
+  );
+}
 
 export default function Page() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
   useEffect(() => {
-    const root = document.documentElement;
-    const progress = document.getElementById("progress");
-    const menuToggle = document.getElementById("menuToggle");
-    const mobileMenu = document.getElementById("mobileMenu");
-    const desktopThemeToggle = document.getElementById("desktopThemeToggle");
-    const mobileThemeToggle = document.getElementById("mobileThemeToggle");
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
     const savedTheme = localStorage.getItem("bisacomTheme");
-    if (
-      savedTheme === "dark" ||
-      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
-      root.classList.add("dark");
-    }
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setDarkMode(savedTheme === "dark" || (!savedTheme && prefersDark));
+  }, []);
 
-    const toggleDark = () => {
-      root.classList.toggle("dark");
-      localStorage.setItem(
-        "bisacomTheme",
-        root.classList.contains("dark") ? "dark" : "light",
-      );
-    };
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+    localStorage.setItem("bisacomTheme", darkMode ? "dark" : "light");
+  }, [darkMode]);
 
-    function setMenu(open: boolean) {
-      if (!menuToggle || !mobileMenu) return;
-      mobileMenu.classList.toggle("is-open", open);
-      menuToggle.classList.toggle("menu-open", open);
-      menuToggle.setAttribute("aria-expanded", String(open));
-      menuToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-    }
+  useEffect(() => {
+    const progress = document.getElementById("progress");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const handleMenuClick = () =>
-      setMenu(!mobileMenu?.classList.contains("is-open"));
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenu(false);
-    };
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (!mobileMenu || !menuToggle) return;
-      const target = event.target as Node;
-      if (!mobileMenu.contains(target) && !menuToggle.contains(target))
-        setMenu(false);
-    };
-
-    menuToggle?.addEventListener("click", handleMenuClick);
-    desktopThemeToggle?.addEventListener("click", toggleDark);
-    mobileThemeToggle?.addEventListener("click", toggleDark);
-    mobileMenu
-      ?.querySelectorAll("a")
-      .forEach((link) => link.addEventListener("click", () => setMenu(false)));
-    document.addEventListener("keydown", handleEscape);
-    document.addEventListener("click", handleOutsideClick);
-
-    let ticking = false;
     const updateProgress = () => {
-      const scrollTop =
-        document.documentElement.scrollTop || document.body.scrollTop;
-      const height =
-        document.documentElement.scrollHeight -
-        document.documentElement.clientHeight;
-      if (progress)
-        progress.style.width =
-          height > 0 ? `${(scrollTop / height) * 100}%` : "0%";
-      ticking = false;
+      const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      if (progress) progress.style.width = height > 0 ? `${(scrollTop / height) * 100}%` : "0%";
     };
 
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(updateProgress);
-        ticking = true;
-      }
-    };
-
+    const handleScroll = () => window.requestAnimationFrame(updateProgress);
     window.addEventListener("scroll", handleScroll, { passive: true });
     updateProgress();
 
@@ -96,7 +98,6 @@ export default function Page() {
         },
         { threshold: 0.18, rootMargin: "0px 0px -40px 0px" },
       );
-
       fadeItems.forEach((el) => observer?.observe(el));
     } else {
       fadeItems.forEach((el) => el.classList.add("show"));
@@ -104,18 +105,15 @@ export default function Page() {
 
     const cookieOverlay = document.getElementById("cookieOverlay");
     const cookieModal = cookieOverlay?.querySelector(".cookie-modal");
-    const analyticsCookies = document.getElementById(
-      "analyticsCookies",
-    ) as HTMLInputElement | null;
-    const marketingCookies = document.getElementById(
-      "marketingCookies",
-    ) as HTMLInputElement | null;
+    const analyticsCookies = document.getElementById("analyticsCookies") as HTMLInputElement | null;
+    const marketingCookies = document.getElementById("marketingCookies") as HTMLInputElement | null;
     const saveCookies = document.getElementById("saveCookies");
     const cancelCookies = document.getElementById("cancelCookies");
     const closeCookies = document.getElementById("closeCookies");
     const manageCookies = document.getElementById("manageCookies");
     const storageKey = "bisacomCookiePreferences";
-    let closeTimeout:number | undefined;
+    let openTimeout: number | undefined;
+    let closeTimeout: number | undefined;
 
     function getPreferences() {
       try {
@@ -127,14 +125,10 @@ export default function Page() {
       }
     }
 
-    function syncInputs(
-      preferences: { analytics?: boolean; marketing?: boolean } | null,
-    ) {
+    function syncInputs(preferences: { analytics?: boolean; marketing?: boolean } | null) {
       if (!preferences) return;
-      if (analyticsCookies)
-        analyticsCookies.checked = Boolean(preferences.analytics);
-      if (marketingCookies)
-        marketingCookies.checked = Boolean(preferences.marketing);
+      if (analyticsCookies) analyticsCookies.checked = Boolean(preferences.analytics);
+      if (marketingCookies) marketingCookies.checked = Boolean(preferences.marketing);
     }
 
     function openCookieModal() {
@@ -158,41 +152,21 @@ export default function Page() {
     }
 
     function savePreferences(analytics: boolean, marketing: boolean) {
-      const preferences = {
-        necessary: true,
-        analytics: Boolean(analytics),
-        marketing: Boolean(marketing),
-        savedAt: new Date().toISOString(),
-      };
+      const preferences = { necessary: true, analytics, marketing, savedAt: new Date().toISOString() };
       localStorage.setItem(storageKey, JSON.stringify(preferences));
       syncInputs(preferences);
       closeCookieModal();
     }
 
     const savedPreferences = getPreferences();
-    let openTimeout: number | undefined;
-    if (!savedPreferences) {
-      openTimeout = window.setTimeout(openCookieModal, 600);
-    } else {
-      syncInputs(savedPreferences);
-    }
+    if (!savedPreferences) openTimeout = window.setTimeout(openCookieModal, 600);
+    else syncInputs(savedPreferences);
 
-    const handleSaveCookies = () =>
-      savePreferences(
-        Boolean(analyticsCookies?.checked),
-        Boolean(marketingCookies?.checked),
-      );
+    const handleSaveCookies = () => savePreferences(Boolean(analyticsCookies?.checked), Boolean(marketingCookies?.checked));
     const handleCancelCookies = () => savePreferences(false, false);
-    const handleCookieOverlayClick = (event: MouseEvent) => {
-      if (event.target === cookieOverlay) closeCookieModal();
-    };
+    const handleCookieOverlayClick = (event: MouseEvent) => { if (event.target === cookieOverlay) closeCookieModal(); };
     const handleCookieEscape = (event: KeyboardEvent) => {
-      if (
-        event.key === "Escape" &&
-        cookieOverlay &&
-        !cookieOverlay.classList.contains("hidden")
-      )
-        closeCookieModal();
+      if (event.key === "Escape" && cookieOverlay && !cookieOverlay.classList.contains("hidden")) closeCookieModal();
     };
 
     saveCookies?.addEventListener("click", handleSaveCookies);
@@ -203,11 +177,6 @@ export default function Page() {
     document.addEventListener("keydown", handleCookieEscape);
 
     return () => {
-      menuToggle?.removeEventListener("click", handleMenuClick);
-      desktopThemeToggle?.removeEventListener("click", toggleDark);
-      mobileThemeToggle?.removeEventListener("click", toggleDark);
-      document.removeEventListener("keydown", handleEscape);
-      document.removeEventListener("click", handleOutsideClick);
       window.removeEventListener("scroll", handleScroll);
       observer?.disconnect();
       saveCookies?.removeEventListener("click", handleSaveCookies);
@@ -226,690 +195,123 @@ export default function Page() {
     <>
       <div id="progress" aria-hidden="true"></div>
 
-      {/* NAV */}
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200/70 bg-white/85 shadow-sm backdrop-blur dark:border-white/10 dark:bg-[#0B1120]/85">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-          <a
-            href="#home"
-            className="flex items-center gap-3 focus-ring rounded-lg"
-            aria-label="Bisacom home"
-          >
-            <img
-              src="/img/Bisacom.webp"
-              className="h-9 w-9 rounded-lg object-cover"
-              alt="Bisacom logo"
-            />
-            <span className="font-bold text-[#1E3A8A] dark:text-white">
-              Bisacom
-            </span>
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#050914]/90 text-white shadow-sm backdrop-blur-xl dark:bg-[#050914]/90">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
+          <a href="#home" className="focus-ring flex items-center gap-3 rounded-lg" aria-label="Bisacom home">
+            <img src="/img/Bisacom.webp" className="h-9 w-9 rounded-lg object-cover" alt="Bisacom logo" />
+            <span className="text-xl font-extrabold tracking-tight">Bisacom</span>
           </a>
 
-          <nav
-            className="hidden items-center gap-7 text-sm font-medium text-slate-600 md:flex dark:text-slate-300"
-            aria-label="Primary navigation"
-          >
-            <a
-              href="#home"
-              className="nav-link hover:text-[#1E3A8A] dark:hover:text-white"
-            >
-              Home
-            </a>
-            <a
-              href="#projects"
-              className="nav-link hover:text-[#1E3A8A] dark:hover:text-white"
-            >
-              Projects
-            </a>
-            <a
-              href="#contact"
-              className="nav-link hover:text-[#1E3A8A] dark:hover:text-white"
-            >
-              Contact
-            </a>
-
-            <button
-              type="button"
-              id="desktopThemeToggle"
-              className="focus-ring btn-lift rounded-lg border border-slate-300 px-3 py-2 text-base leading-none hover:bg-slate-100 dark:border-white/20 dark:hover:bg-white/10"
-              aria-label="Toggle dark mode"
-            >
-              <span aria-hidden="true">&#9790;</span>
-            </button>
-
-            <a
-              href="https://wa.me/447555824637"
-              className="focus-ring btn-lift rounded-lg bg-green-500 px-4 py-2 font-semibold text-white shadow-sm shadow-green-500/20 hover:bg-green-600 hover:shadow-lg hover:shadow-green-500/25"
-            >
-              WhatsApp
-            </a>
+          <nav className="hidden items-center gap-8 text-sm font-medium text-slate-300 lg:flex" aria-label="Primary navigation">
+            <a href="#projects" className="nav-link hover:text-white">Work</a>
+            <a href="#about" className="nav-link hover:text-white">About</a>
+            <a href="#process" className="nav-link hover:text-white">Process</a>
+            <a href="#skills" className="nav-link hover:text-white">Skills</a>
+            <a href="/blog" className="nav-link hover:text-white">Blog</a>
+            <a href="#contact" className="nav-link hover:text-white">Contact</a>
           </nav>
 
-          <button
-            type="button"
-            id="menuToggle"
-            className="focus-ring btn-lift inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white/80 text-slate-800 shadow-sm backdrop-blur md:hidden dark:border-white/20 dark:bg-white/5 dark:text-white"
-            aria-expanded="false"
-            aria-controls="mobileMenu"
-            aria-label="Open menu"
-          >
-            <span className="sr-only">Open menu</span>
-            <span aria-hidden="true" className="grid gap-[5px]">
-              <span className="hamburger-line"></span>
-              <span className="hamburger-line"></span>
-              <span className="hamburger-line"></span>
-            </span>
+          <div className="hidden items-center gap-3 lg:flex">
+            <button type="button" onClick={() => setDarkMode((value) => !value)} className="focus-ring btn-lift inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/[0.04] text-white hover:bg-white/10" aria-label="Toggle dark mode">
+              <span aria-hidden="true">{darkMode ? "☀" : "☾"}</span>
+            </button>
+            <a href="/Bismark-Apenkwah-CV.pdf" className="focus-ring btn-lift inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white hover:bg-white/10">Download CV <span aria-hidden="true">↓</span></a>
+            <a href="#contact" className="focus-ring btn-lift inline-flex items-center gap-2 rounded-xl bg-[#2D5BFF] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 hover:bg-[#1f49e8]">Let&apos;s Talk <span aria-hidden="true">＋</span></a>
+          </div>
+
+          <button type="button" onClick={() => setMenuOpen((value) => !value)} className={`focus-ring btn-lift inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/[0.06] text-white shadow-sm backdrop-blur lg:hidden ${menuOpen ? "menu-open" : ""}`} aria-expanded={menuOpen} aria-controls="mobileMenu" aria-label={menuOpen ? "Close menu" : "Open menu"}>
+            <span className="sr-only">{menuOpen ? "Close menu" : "Open menu"}</span>
+            <span aria-hidden="true" className="grid gap-[5px]"><span className="hamburger-line"></span><span className="hamburger-line"></span><span className="hamburger-line"></span></span>
           </button>
         </div>
 
-        <nav
-          id="mobileMenu"
-          className="mobile-menu-panel border-t border-slate-200 bg-white/95 px-5 shadow-xl shadow-slate-900/5 backdrop-blur md:hidden dark:border-white/10 dark:bg-[#0B1120]/95"
-          aria-label="Mobile navigation"
-        >
-          <div className="mx-auto grid max-w-6xl gap-2 py-4 text-sm font-semibold">
-            <a
-              href="#home"
-              className="focus-ring rounded-xl px-4 py-3 text-slate-700 transition hover:bg-slate-100 hover:text-[#1E3A8A] dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white"
-            >
-              Home
-            </a>
-            <a
-              href="#projects"
-              className="focus-ring rounded-xl px-4 py-3 text-slate-700 transition hover:bg-slate-100 hover:text-[#1E3A8A] dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white"
-            >
-              Projects
-            </a>
-            <a
-              href="#contact"
-              className="focus-ring rounded-xl px-4 py-3 text-slate-700 transition hover:bg-slate-100 hover:text-[#1E3A8A] dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white"
-            >
-              Contact
-            </a>
-            <div className="grid gap-3 pt-3 sm:grid-cols-2">
-              <button
-                type="button"
-                id="mobileThemeToggle"
-                className="focus-ring btn-lift rounded-xl border border-slate-300 px-4 py-3 font-semibold text-slate-800 hover:bg-slate-100 dark:border-white/20 dark:text-white dark:hover:bg-white/10"
-              >
-                Toggle theme
-              </button>
-              <a
-                href="https://wa.me/447555824637"
-                className="focus-ring btn-lift rounded-xl bg-green-500 px-4 py-3 text-center font-semibold text-white shadow-lg shadow-green-500/20 hover:bg-green-600"
-              >
-                WhatsApp
-              </a>
+        <nav id="mobileMenu" className={`mobile-menu-panel border-t border-white/10 bg-[#050914]/95 px-5 shadow-xl shadow-black/30 backdrop-blur-xl lg:hidden ${menuOpen ? "is-open" : ""}`} aria-label="Mobile navigation">
+          <div className="mx-auto grid max-w-7xl gap-2 py-4 text-sm font-semibold text-slate-200">
+            {["Work", "About", "Process", "Skills", "Contact"].map((item) => (
+              <a key={item} href={item === "Work" ? "#projects" : `#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)} className="focus-ring rounded-xl px-4 py-3 transition hover:bg-white/10 hover:text-white">{item}</a>
+            ))}
+            <a href="/blog" onClick={() => setMenuOpen(false)} className="focus-ring rounded-xl px-4 py-3 transition hover:bg-white/10 hover:text-white">Blog</a>
+            <div className="grid gap-3 pt-3 sm:grid-cols-3">
+              <button type="button" onClick={() => setDarkMode((value) => !value)} className="focus-ring btn-lift rounded-xl border border-white/15 px-4 py-3 font-semibold text-white hover:bg-white/10">{darkMode ? "Light mode" : "Dark mode"}</button>
+              <a href="/Bismark-Apenkwah-CV.pdf" className="focus-ring btn-lift rounded-xl border border-white/15 px-4 py-3 text-center font-semibold text-white hover:bg-white/10">Download CV</a>
+              <a href="#contact" onClick={() => setMenuOpen(false)} className="focus-ring btn-lift rounded-xl bg-[#2D5BFF] px-4 py-3 text-center font-semibold text-white shadow-lg shadow-blue-500/25 hover:bg-[#1f49e8]">Let&apos;s Talk</a>
             </div>
           </div>
         </nav>
       </header>
 
-      {/* HERO */}
       <main>
-        <section
-          id="home"
-          className="relative flex min-h-screen items-center overflow-hidden pt-28"
-        >
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.14),transparent_36%),linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.18),transparent_34%),linear-gradient(180deg,#0B1120_0%,#020617_100%)]"></div>
+        <section id="home" className="relative isolate overflow-hidden bg-[#050914] pt-28 text-white">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_22%,rgba(45,91,255,0.18),transparent_34%),radial-gradient(circle_at_75%_20%,rgba(45,91,255,0.14),transparent_32%),linear-gradient(180deg,#050914_0%,#070B16_100%)]"></div>
+          <div className="absolute left-1/2 top-24 -z-10 hidden h-52 w-52 -translate-x-1/2 rotate-12 rounded-[3rem] border border-blue-500/20 lg:block"></div>
 
-          <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-[1fr_0.9fr]">
-            <div className="fade-up">
-              <p className="mb-4 inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-semibold text-[#1E3A8A] dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-200">
-                Norwich product designer for websites and apps
-              </p>
-
-              <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-tight text-blue-700 md:text-6xl dark:text-white">
-                I design digital products that turn visitors into customers.
-              </h1>
-
-              <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600 dark:text-slate-300">
-                Bisacom helps startups and local businesses shape clearer user
-                journeys, sharper interfaces, and front-end builds that make
-                enquiries easier.
-              </p>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a
-                  href="https://wa.me/447555824637"
-                  className="focus-ring btn-lift card-hover rounded-lg bg-[#2D5BDE] px-6 py-3 text-center font-semibold text-white hover:bg-[#172f70]"
-                >
-                  Get a quote on WhatsApp
-                </a>
-
-                <a
-                  href="#projects"
-                  className="focus-ring btn-lift card-hover rounded-lg border border-slate-300 px-6 py-3 text-center font-semibold text-slate-800 hover:bg-white dark:border-white/20 dark:text-white dark:hover:bg-white/10"
-                >
-                  View projects &rarr;
-                </a>
+          <div className="mx-auto grid min-h-[720px] max-w-7xl items-center gap-12 px-6 pb-20 pt-12 md:pt-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+            <div className="fade-up max-w-2xl">
+              <p className="mb-7 text-xs font-bold uppercase tracking-[0.2em] text-blue-400">Product Designer &amp; Front-End Developer</p>
+              <h1 className="text-4xl font-black leading-[1.04] tracking-[-0.055em] text-white sm:text-5xl md:text-6xl xl:text-7xl">I design digital products that <span className="bg-gradient-to-r from-[#3B6DFF] to-[#6D8DFF] bg-clip-text text-transparent">solve real problems.</span></h1>
+              <p className="mt-7 max-w-xl text-base leading-8 text-slate-300 md:text-lg">Product Designer with a front-end mindset, helping startups and businesses in the UK build user-centred web and mobile experiences that drive results.</p>
+              <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+                <a href="#projects" className="focus-ring btn-lift inline-flex items-center justify-center gap-3 rounded-xl bg-[#2D5BFF] px-7 py-4 text-sm font-bold text-white shadow-xl shadow-blue-500/25 hover:bg-[#1f49e8]">View My Work <span aria-hidden="true">→</span></a>
+                <a href="#contact" className="focus-ring btn-lift inline-flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-white/[0.03] px-7 py-4 text-sm font-bold text-white hover:bg-white/10">Let&apos;s Work Together <span aria-hidden="true">→</span></a>
               </div>
-
-              <dl className="mt-10 grid max-w-lg grid-cols-3 gap-4 text-sm">
-                <div>
-                  <dt className="font-bold text-slate-950 dark:text-white">
-                    UX
-                  </dt>
-                  <dd className="mt-1 text-slate-500 dark:text-slate-400">
-                    Clear flows
-                  </dd>
-                </div>
-                <div>
-                  <dt className="font-bold text-slate-950 dark:text-white">
-                    UI
-                  </dt>
-                  <dd className="mt-1 text-slate-500 dark:text-slate-400">
-                    Polished screens
-                  </dd>
-                </div>
-                <div>
-                  <dt className="font-bold text-slate-950 dark:text-white">
-                    Build
-                  </dt>
-                  <dd className="mt-1 text-slate-500 dark:text-slate-400">
-                    Responsive code
-                  </dd>
-                </div>
-              </dl>
-            </div>
-
-            <div className="fade-up">
-              <div className="relative">
-                <div
-                  className="absolute -inset-4 rounded-[2rem] bg-blue-500/10 blur-2xl dark:bg-blue-400/10"
-                  aria-hidden="true"
-                ></div>
-                <img
-                  src="/img//mockup.webp"
-                  className="relative w-full rounded-2xl border border-white/70 shadow-2xl dark:border-white/10"
-                  alt="Product interface mockup designed by Bisacom"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* SERVICES */}
-        <section className="bg-white py-20 dark:bg-[#020617]">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <p className="text-sm font-semibold uppercase tracking-widest text-blue-500">
-                Services
-              </p>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-                Design that is easy to use and easy to act on.
-              </h2>
-              <p className="mt-4 text-slate-500 dark:text-slate-400">
-                From first impression to final enquiry, every section is shaped
-                around trust, clarity, and conversion.
-              </p>
-            </div>
-
-            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              <article className="card-hover rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-white/10 dark:bg-[#111827]">
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-400/10 dark:text-blue-300">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M5.121 17.804A10.97 10.97 0 0112 15c2.5 0 4.847.815 6.879 2.196M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-semibold">User-centred design</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                  Interfaces shaped around what real users need to decide,
-                  trust, and act.
-                </p>
-              </article>
-
-              <article className="card-hover rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-white/10 dark:bg-[#111827]">
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 text-green-600 dark:bg-green-400/10 dark:text-green-300">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M4 7h16M4 12h16M4 17h10"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-semibold">Responsive layouts</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                  Clean, stable pages that work comfortably across mobile,
-                  tablet, and desktop.
-                </p>
-              </article>
-
-              <article className="card-hover rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-white/10 dark:bg-[#111827]">
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-400/10 dark:text-amber-300">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 8v4l3 3M12 3a9 9 0 100 18 9 9 0 000-18z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-semibold">Conversion focus</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                  Sharper calls to action, clearer structure, and fewer blockers
-                  before contact.
-                </p>
-              </article>
-
-              <article className="card-hover rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-white/10 dark:bg-[#111827]">
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-violet-100 text-violet-600 dark:bg-violet-400/10 dark:text-violet-300">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M8 9l-3 3 3 3m8-6l3 3-3 3"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-semibold">Front-end build</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                  Efficient, maintainable front-end work with performance and
-                  accessibility in mind.
-                </p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        {/* PROJECTS */}
-        <section id="projects" className="bg-slate-50 py-20 dark:bg-[#020617]">
-          <div className="mx-auto max-w-7xl px-6">
-            <div className="mb-12 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-widest text-blue-500">
-                  Featured projects
-                </p>
-                <h2 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
-                  Selected work
-                </h2>
-                <p className="mt-3 max-w-2xl text-slate-500 dark:text-slate-400">
-                  A few examples of product thinking, interface design, and
-                  conversion-focused web experiences.
-                </p>
+              <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
+                <div className="flex -space-x-3">{["/img/Client1.webp", "/img/Client2.webp", "/img/Client3.webp", "/img/Bisacom.webp"].map((src, index) => <img key={src} src={src} className="h-10 w-10 rounded-full border-2 border-[#050914] object-cover" alt={`Trusted client ${index + 1}`} />)}</div>
+                <p className="max-w-xs text-sm leading-6 text-slate-400">Trusted by startups &amp; local businesses across the UK</p>
               </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
-              <article className="group card-hover overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#111827]">
-                <div className="relative overflow-hidden">
-                  <img
-                    src="/img//mobile.webp"
-                    className="project-img h-60 w-full object-cover"
-                    alt="Mobile mechanic app screens"
-                  />
-                  <span className="absolute bottom-4 left-4 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold shadow dark:bg-[#020617]/95">
-                    Mobile App
-                  </span>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-lg font-semibold">Mobile Mechanic App</h3>
-                  <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                    On-demand car repair app connecting drivers with trusted
-                    local mechanics.
-                  </p>
-                  <a
-                    href="/projects/mobile-mechanic-app"
-                    className="focus-ring mt-5 inline-flex rounded-md text-sm font-semibold text-blue-600 hover:text-blue-700"
-                  >
-                    View case study &rarr;
-                  </a>
-                </div>
-              </article>
-
-              <article className="group card-hover overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#111827]">
-                <div className="relative overflow-hidden">
-                  <img
-                    src="/img//cleaning.webp"
-                    className="project-img h-60 w-full object-cover"
-                    alt="Cleaning service website design"
-                  />
-                  <span className="absolute bottom-4 left-4 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold shadow dark:bg-[#020617]/95">
-                    Website Design
-                  </span>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-lg font-semibold">Cleaning Website</h3>
-                  <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                    A modern UK service website designed to build trust and
-                    generate enquiries.
-                  </p>
-                  <a
-                    href="/projects/cleaning-website"
-                    className="focus-ring mt-5 inline-flex rounded-md text-sm font-semibold text-blue-600 hover:text-blue-700"
-                  >
-                    View case study &rarr;
-                  </a>
-                </div>
-              </article>
-
-              <article className="group card-hover overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#111827]">
-                <div className="relative overflow-hidden">
-                  <img
-                    src="/img//abas.webp"
-                    className="project-img h-60 w-full object-cover"
-                    alt="Majoa's Kitchen ecommerce interface"
-                  />
-                  <span className="absolute bottom-4 left-4 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold shadow dark:bg-[#020617]/95">
-                    E-commerce
-                  </span>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-lg font-semibold">Majoa's Kitchen</h3>
-                  <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                    An ordering experience for a UK-based Ghanaian kitchen,
-                    built to increase online sales.
-                  </p>
-                  <a
-                    href="/projects/majoas-kitchen"
-                    className="focus-ring mt-5 inline-flex rounded-md text-sm font-semibold text-blue-600 hover:text-blue-700"
-                  >
-                    View case study &rarr;
-                  </a>
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        {/* RESULTS */}
-        <section className="bg-white py-20 dark:bg-[#020617]">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="grid gap-10 md:grid-cols-[0.9fr_1.1fr] md:items-center">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-widest text-blue-500">
-                  Results
-                </p>
-                <h2 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
-                  Better structure creates better decisions.
-                </h2>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div className="rounded-xl border border-slate-200 p-6 dark:border-white/10">
-                  <h3 className="text-2xl font-bold text-blue-500">More</h3>
-                  <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                    Qualified enquiries
-                  </p>
-                </div>
-                <div className="rounded-xl border border-slate-200 p-6 dark:border-white/10">
-                  <h3 className="text-2xl font-bold text-blue-500">Higher</h3>
-                  <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                    Customer trust
-                  </p>
-                </div>
-                <div className="rounded-xl border border-slate-200 p-6 dark:border-white/10">
-                  <h3 className="text-2xl font-bold text-blue-500">Lower</h3>
-                  <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                    Decision friction
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* APPROACH */}
-        <section className="bg-slate-50 py-20 dark:bg-[#111827]">
-          <div className="mx-auto max-w-6xl px-6 text-center">
-            <p className="text-sm font-semibold uppercase tracking-widest text-blue-500">
-              Process
-            </p>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
-              My approach
-            </h2>
-            <div className="mx-auto mt-10 grid max-w-4xl gap-4 md:grid-cols-4">
-              <div className="rounded-xl bg-white p-5 shadow-sm dark:bg-[#020617]">
-                Research
-              </div>
-              <div className="rounded-xl bg-white p-5 shadow-sm dark:bg-[#020617]">
-                UX Strategy
-              </div>
-              <div className="rounded-xl bg-white p-5 shadow-sm dark:bg-[#020617]">
-                UI Design
-              </div>
-              <div className="rounded-xl bg-white p-5 shadow-sm dark:bg-[#020617]">
-                Build
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* TESTIMONIALS */}
-        <section className="bg-white py-20 dark:bg-[#0B1120]">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <p className="text-sm font-semibold uppercase tracking-widest text-blue-500">
-                Testimonials
-              </p>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
-                What clients say
-              </h2>
-              <p className="mt-4 text-slate-500 dark:text-slate-400">
-                Trusted by startups and local businesses.
-              </p>
-            </div>
-
-            <div className="mt-12 grid gap-6 md:grid-cols-3">
-              <figure className="card-hover rounded-xl bg-slate-50 p-6 dark:bg-[#1F2937]">
-                <div
-                  className="mb-4 text-lg text-amber-400"
-                  aria-label="5 out of 5 stars"
-                >
-                  &#9733;&#9733;&#9733;&#9733;&#9733;
-                </div>
-                <blockquote className="text-slate-600 dark:text-slate-300">
-                  "Bisacom completely transformed our website. We started
-                  getting more enquiries within weeks."
-                </blockquote>
-                <figcaption className="mt-6 flex items-center gap-3">
-                  <img
-                    src="/img//Client1.webp"
-                    className="h-11 w-11 rounded-full object-cover"
-                    alt="Michael A."
-                  />
-                  <div>
-                    <p className="font-semibold">Michael A.</p>
-                    <p className="text-sm text-slate-400">
-                      Cleaning Business Owner
-                    </p>
+            <div className="fade-up relative min-h-[360px] lg:min-h-[560px]">
+              <div className="relative mx-auto w-full max-w-2xl lg:absolute lg:-right-24 lg:top-6 lg:w-[760px] lg:max-w-none lg:rotate-[-3deg] xl:-right-32">
+                <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-3 shadow-2xl shadow-black/60 backdrop-blur">
+                  <div className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#0B1120]">
+                    <div className="flex items-center justify-between border-b border-white/10 px-5 py-4 text-xs text-slate-300">
+                      <div className="flex items-center gap-2 font-bold text-white"><span className="grid h-6 w-6 place-items-center rounded-lg bg-blue-500 text-[10px]">B</span> Mobile Mechanic</div>
+                      <div className="hidden gap-6 md:flex"><span>Home</span><span>Services</span><span>How it works</span><span>About us</span></div>
+                      <span className="rounded-lg bg-blue-500 px-3 py-2 text-white">Book Now</span>
+                    </div>
+                    <div className="grid min-h-[360px] items-center gap-8 bg-[linear-gradient(90deg,rgba(5,9,20,0.95),rgba(5,9,20,0.82)),url('/img/mockup.webp')] bg-cover bg-center px-6 py-10 lg:grid-cols-[0.8fr_1fr] lg:px-8">
+                      <div><h2 className="text-3xl font-extrabold leading-tight text-white">Reliable. Fast.<br />On-Demand Car Repairs at Your Doorstep</h2><p className="mt-4 max-w-sm text-sm leading-6 text-slate-300">Book a trusted mechanic to come to you anytime, anywhere.</p><div className="mt-6 flex flex-wrap gap-3"><span className="rounded-lg bg-blue-500 px-4 py-3 text-sm font-bold text-white">Book a Mechanic</span><span className="rounded-lg border border-white/20 px-4 py-3 text-sm font-bold text-white">How it works</span></div></div>
+                      <div className="hidden lg:block"></div>
+                      <div className="col-span-full grid gap-4 text-xs text-slate-300 sm:grid-cols-3"><span className="rounded-full border border-white/10 bg-black/20 px-4 py-3">◎ Certified Mechanics</span><span className="rounded-full border border-white/10 bg-black/20 px-4 py-3">◌ Fair Pricing</span><span className="rounded-full border border-white/10 bg-black/20 px-4 py-3">✦ Fast Response</span></div>
+                    </div>
                   </div>
-                </figcaption>
-              </figure>
-
-              <figure className="card-hover rounded-xl bg-slate-50 p-6 dark:bg-[#1F2937]">
-                <div
-                  className="mb-4 text-lg text-amber-400"
-                  aria-label="5 out of 5 stars"
-                >
-                  &#9733;&#9733;&#9733;&#9733;&#9733;
                 </div>
-                <blockquote className="text-slate-600 dark:text-slate-300">
-                  "The UX thinking behind the mobile mechanic app was
-                  exceptional. Everything just made sense."
-                </blockquote>
-                <figcaption className="mt-6 flex items-center gap-3">
-                  <img
-                    src="/img//Client3.webp"
-                    className="h-11 w-11 rounded-full object-cover"
-                    alt="Daniel K."
-                  />
-                  <div>
-                    <p className="font-semibold">Daniel K.</p>
-                    <p className="text-sm text-slate-400">Startup Founder</p>
-                  </div>
-                </figcaption>
-              </figure>
-
-              <figure className="card-hover rounded-xl bg-slate-50 p-6 dark:bg-[#1F2937]">
-                <div
-                  className="mb-4 text-lg text-amber-400"
-                  aria-label="5 out of 5 stars"
-                >
-                  &#9733;&#9733;&#9733;&#9733;&#9733;
-                </div>
-                <blockquote className="text-slate-600 dark:text-slate-300">
-                  "Professional, fast, and very detail-oriented. The final
-                  product exceeded expectations."
-                </blockquote>
-                <figcaption className="mt-6 flex items-center gap-3">
-                  <img
-                    src="/img//Client2.webp"
-                    className="h-11 w-11 rounded-full object-cover"
-                    alt="Majoa K."
-                  />
-                  <div>
-                    <p className="font-semibold">Majoa K.</p>
-                    <p className="text-sm text-slate-400">
-                      Food Business Owner
-                    </p>
-                  </div>
-                </figcaption>
-              </figure>
+                <div className="absolute -bottom-8 left-3 hidden w-40 rounded-[2rem] border border-white/10 bg-[#0B1120] p-2 shadow-2xl shadow-black/60 md:block lg:left-10 lg:w-44"><img src="/img/mobile.webp" alt="Mobile app preview" className="h-72 w-full rounded-[1.5rem] object-cover" /></div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* CONTACT */}
-        <section id="contact" className="bg-slate-50 py-20 dark:bg-[#111827]">
-          <div className="mx-auto grid max-w-5xl gap-10 px-6 md:grid-cols-[0.9fr_1.1fr]">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-widest text-blue-500">
-                Contact
-              </p>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight">
-                Have a project in mind?
-              </h2>
-              <p className="mt-4 leading-7 text-slate-600 dark:text-slate-300">
-                Tell me what you are building, what needs to improve, and where
-                customers currently get stuck. I will get back within 24 hours.
-              </p>
-
-              <div className="mt-8 space-y-2 text-slate-600 dark:text-slate-300">
-                <p>
-                  <span className="font-semibold text-slate-950 dark:text-white">
-                    WhatsApp:
-                  </span>{" "}
-                  <a
-                    className="hover:text-blue-600"
-                    href="https://wa.me/447555824637"
-                  >
-                    +44 7555 824637
-                  </a>
-                </p>
-                <p>
-                  <span className="font-semibold text-slate-950 dark:text-white">
-                    Email:
-                  </span>{" "}
-                  <a
-                    className="hover:text-blue-600"
-                    href="mailto:hello@bisacom.com"
-                  >
-                    hello@bisacom.com
-                  </a>
-                </p>
-              </div>
-            </div>
-
-            <form
-              action="https://formspree.io/f/xldnqpbp"
-              method="POST"
-              className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-[#1F2937] dark:ring-white/10"
-            >
-              <div className="grid gap-4">
-                <label className="grid gap-2 text-sm font-medium">
-                  Your name
-                  <input
-                    type="text"
-                    name="name"
-                    autoComplete="name"
-                    required
-                    className="focus-ring w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 dark:border-white/10 dark:bg-[#111827] dark:text-white"
-                  />
-                </label>
-
-                <label className="grid gap-2 text-sm font-medium">
-                  Email address
-                  <input
-                    type="email"
-                    name="email"
-                    autoComplete="email"
-                    required
-                    className="focus-ring w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 dark:border-white/10 dark:bg-[#111827] dark:text-white"
-                  />
-                </label>
-
-                <label className="grid gap-2 text-sm font-medium">
-                  Project details
-                  <textarea
-                    name="message"
-                    rows={5}
-                    required
-                    className="focus-ring w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 dark:border-white/10 dark:bg-[#111827] dark:text-white"
-                  ></textarea>
-                </label>
-
-                <button
-                  type="submit"
-                  className="focus-ring rounded-lg bg-[#1E3A8A] px-6 py-3 font-semibold text-white hover:bg-[#172f70]"
-                >
-                  Send message
-                </button>
-              </div>
-            </form>
+        <section id="about" className="border-y border-slate-200/70 bg-white py-10 dark:border-white/10 dark:bg-[#080D1A]">
+          <div className="mx-auto grid max-w-7xl gap-8 px-6 sm:grid-cols-2 lg:grid-cols-4 lg:px-8">
+            {[
+              ["User-Centred Design", "I design with real users in mind, not just aesthetics.", "○"],
+              ["End-to-End Solution", "From research and design to development.", "▯"],
+              ["Conversion Focused", "Designs that help businesses grow.", "↗"],
+              ["Clean & Scalable Code", "Front-end development with performance in mind.", "<>"],
+            ].map(([title, text, icon]) => (
+              <article key={title} className="flex gap-4 border-slate-200/80 lg:border-r lg:pr-8 last:border-r-0 dark:border-white/10"><IconBox>{icon}</IconBox><div><h3 className="font-bold text-slate-950 dark:text-white">{title}</h3><p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{text}</p></div></article>
+            ))}
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="bg-[#1E3A8A] px-6 py-14 text-center text-white">
-          <h2 className="text-3xl font-bold tracking-tight">
-            Ready to bring your idea to life?
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-blue-100">
-            Start with a quick message and I will help you map the next best
-            step.
-          </p>
-          <a
-            href="https://wa.me/447555824637"
-            className="focus-ring btn-lift mt-7 inline-flex rounded-lg bg-green-500 px-6 py-3 font-semibold text-white hover:bg-green-600"
-          >
-            Chat on WhatsApp
-          </a>
+        <section id="projects" className="bg-white py-20 dark:bg-[#050914]">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between"><div><p className="text-xs font-bold uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400">Featured Work</p><h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-slate-950 md:text-4xl dark:text-white">Selected Projects</h2></div><a href="/projects" className="focus-ring inline-flex items-center gap-2 text-sm font-bold text-blue-600 dark:text-blue-400">View all projects <span>→</span></a></div>
+            <div className="grid gap-6 md:grid-cols-3">{projects.map((project) => <article key={project.title} className="group card-hover overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#0B1120]"><div className="overflow-hidden bg-slate-100 dark:bg-white/[0.03]"><img src={project.image} className="project-img h-64 w-full object-cover" alt={`${project.title} preview`} /></div><div className="p-6"><p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">{project.type}</p><h3 className="mt-3 text-xl font-bold text-slate-950 dark:text-white">{project.title}</h3><p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{project.description}</p><a href={project.href} className="focus-ring mt-5 inline-flex text-sm font-bold text-blue-600 dark:text-blue-400">View Case Study →</a></div></article>)}</div>
+          </div>
+        </section>
+
+        <section id="process" className="bg-slate-50 py-20 dark:bg-[#080D1A]">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8"><div className="grid gap-10 lg:grid-cols-[0.55fr_1.45fr]"><div><p className="text-xs font-bold uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400">My Design Process</p><h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-slate-950 md:text-4xl dark:text-white">How I Work</h2><p className="mt-4 max-w-sm text-sm leading-7 text-slate-600 dark:text-slate-400">A clear process to solve the right problems and deliver real value.</p></div><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">{["Discover", "Define", "Design", "Build", "Deliver"].map((step, index) => <article key={step} className="process-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#0B1120]"><p className="text-xs font-bold text-blue-600 dark:text-blue-400">{String(index + 1).padStart(2, "0")}</p><h3 className="mt-4 font-bold text-slate-950 dark:text-white">{step}</h3><p className="mt-3 text-xs leading-6 text-slate-600 dark:text-slate-400">{["Understand users, business goals and problems.", "Analyse insights and define the right problem.", "Ideate, wireframe and design user-centred solutions.", "Develop clean code and bring designs to life.", "Test, refine and deliver measurable results."][index]}</p></article>)}</div></div></div>
+        </section>
+
+        <section id="skills" className="bg-white py-20 dark:bg-[#050914]">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8"><div className="mx-auto max-w-2xl text-center"><p className="text-xs font-bold uppercase tracking-[0.22em] text-blue-600 dark:text-blue-400">Customer Reviews</p><h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-slate-950 md:text-4xl dark:text-white">Trusted by clients and collaborators</h2><p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-400">Social proof that supports your UK recruiter-ready positioning.</p></div><div className="mt-12 grid gap-6 md:grid-cols-3">{reviews.map((review) => <figure key={review.name} className="card-hover rounded-2xl border border-slate-200 bg-slate-50 p-6 dark:border-white/10 dark:bg-[#0B1120]"><div className="text-lg text-amber-400" aria-label="5 out of 5 stars">★★★★★</div><blockquote className="mt-5 text-sm leading-7 text-slate-700 dark:text-slate-300">“{review.quote}”</blockquote><figcaption className="mt-6 flex items-center gap-3"><img src={review.image} className="h-12 w-12 rounded-full object-cover" alt={review.name} /><div><p className="font-bold text-slate-950 dark:text-white">{review.name}</p><p className="text-sm text-slate-500 dark:text-slate-400">{review.role}</p></div></figcaption></figure>)}</div></div>
+        </section>
+
+        <section id="contact" className="bg-white px-6 pb-20 dark:bg-[#050914] lg:px-8">
+          <div className="mx-auto flex max-w-7xl flex-col gap-8 rounded-2xl bg-[linear-gradient(135deg,#050914,#21115C)] p-8 text-white shadow-2xl shadow-blue-950/20 md:flex-row md:items-center md:justify-between lg:p-10"><div><p className="text-xs font-bold uppercase tracking-[0.22em] text-blue-300">Have a project in mind?</p><h2 className="mt-3 text-3xl font-black tracking-[-0.04em] md:text-4xl">Let’s build something amazing together.</h2></div><a href="mailto:hello@bisacom.dev" className="focus-ring btn-lift inline-flex items-center justify-center gap-3 rounded-xl bg-[#2D5BFF] px-10 py-4 text-sm font-bold text-white shadow-xl shadow-blue-500/25 hover:bg-[#1f49e8]">Let&apos;s Talk <span aria-hidden="true">☏</span></a></div>
         </section>
       </main>
 
@@ -948,13 +350,13 @@ export default function Page() {
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3">
                   <a
-                    href="https://wa.me/447555824637"
+                    href="mailto:hello@bisacom.dev"
                     className="focus-ring rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-green-500/20 hover:bg-green-600"
                   >
                     Start a project
                   </a>
                   <a
-                    href="mailto:hello@bisacom.com"
+                    href="mailto:hello@bisacom.dev"
                     className="focus-ring rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10"
                   >
                     Email me
@@ -980,7 +382,7 @@ export default function Page() {
                     Contact
                   </a>
                   <a
-                    href="https://wa.me/447555824637"
+                    href="mailto:hello@bisacom.dev"
                     className="transition hover:text-white"
                   >
                     WhatsApp

@@ -35,24 +35,39 @@ export const project = {
       },
     },
     {
-      name: 'problem',
-      title: 'Problem',
-      type: 'text',
-    },
-    {
-      name: 'approach',
-      title: 'Approach',
-      type: 'text',
-    },
-    {
-      name: 'solution',
-      title: 'Solution',
-      type: 'text',
-    },
-    {
-      name: 'outcome',
-      title: 'Outcome',
-      type: 'text',
+      name: 'sections',
+      title: 'Project Sections',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'number',
+              title: 'Section Number',
+              type: 'number',
+            },
+            {
+              name: 'title',
+              title: 'Section Title',
+              type: 'string',
+            },
+            {
+              name: 'description',
+              title: 'Section Description',
+              type: 'text',
+            },
+            {
+              name: 'image',
+              title: 'Section Image',
+              type: 'image',
+              options: {
+                hotspot: true,
+              },
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'liveUrl',
